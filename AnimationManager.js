@@ -53,10 +53,13 @@ export class AnimationManager {
 
         // set controls
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+
+        // node list
+        this.nodes = [];
     }
 
     // Initialise animation loop
-    animate( nodes ) {
+    animate() {
         this.renderer.setAnimationLoop(() => {
             // rotate all objects in group
             this.group.rotation.x += 0.001;
@@ -65,8 +68,8 @@ export class AnimationManager {
         
             // randomly make a node inactive
             let index = randInt(0, 100000);
-            if (index < nodes.size) {
-              nodes.at(index).setInactive(); 
+            if (index < this.nodes.length) {
+              this.nodes.at(index).setInactive(); 
             }
       
             // render frame
@@ -84,11 +87,10 @@ export class AnimationManager {
     }
       
     createRandomNodes( number ) {
-        const nodes = [];
         for (let i = 0; i < number; i++) {
             const node = this.createRandomNode();
-            nodes.push( node );
+            this.nodes.push( node );
         }
-        return nodes;
+
     }
 }

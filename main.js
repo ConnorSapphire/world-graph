@@ -10,7 +10,7 @@ const manager = new AnimationManager( true );
 
 const nodes = manager.createRandomNodes( 50 );
 
-manager.animate( nodes );
+manager.animate();
 
 // const lineMaterial = new THREE.LineBasicMaterial({ color:0xFFFFFF });
 // for (let i = 0; i < 500; i++) {
