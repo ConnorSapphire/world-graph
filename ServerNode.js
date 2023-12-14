@@ -9,13 +9,13 @@ export class ServerNode {
       this.size = size;
       
       // get cartesian coordinates from longitude and latitude
-      let x = radius * Math.cos(latitude) * Math.cos(longitude);
-      let y = radius * Math.cos(latitude) * Math.sin(longitude);
-      let z = radius * Math.sin(latitude);
+      this.x = radius * Math.cos(latitude) * Math.cos(longitude);
+      this.y = radius * Math.cos(latitude) * Math.sin(longitude);
+      this.z = radius * Math.sin(latitude);
       
       // create mesh  and set position
       this.mesh = new THREE.Mesh( this.geometry, this.activeMaterial );
-      this.mesh.position.set(x, y, z);
+      this.mesh.position.set(this.x, this.y, this.z);
       this.mesh.scale.set( size, size, size );
     }
   

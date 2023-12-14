@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { randFloat, randInt } from 'three/src/math/MathUtils';
 import { ServerNode } from './ServerNode.js';
+import { NodeConnection } from './NodeConnection.js';
 
 export class AnimationManager {
     constructor(gridVisible) {
@@ -46,10 +47,11 @@ export class AnimationManager {
         this.group.add( this.world );
         this.scene.add( this.group );
 
-        // create node resources
+        // create node and line resources
         this.nodeGeometry = new THREE.SphereGeometry( 0.5 );
         this.activeNodeMaterial = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
         this.inactiveNodeMaterial = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+        this.lineMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF });
 
         // set controls
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
@@ -77,6 +79,11 @@ export class AnimationManager {
         });
     }
 
+    createConnection( startNode, endNode ) {
+        const line = new NodeConnection( startNode, endNode, this.worldRadius, 1.25, 30, this.lineMaterial );
+        this.group.add( line.line );
+    }
+
     createRandomNode() {
         const size = randFloat(0.1, 1);
         const longitude = randFloat(-3.14, 3.14);
@@ -90,7 +97,9 @@ export class AnimationManager {
         for (let i = 0; i < number; i++) {
             const node = this.createRandomNode();
             this.nodes.push( node );
+            if ( i != 0 ) {
+                this.createConnection( this.nodes.at( i-1 ), node );
+            }
         }
-
     }
 }
