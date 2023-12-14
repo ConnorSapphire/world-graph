@@ -17,9 +17,9 @@ export class NodeConnection {
         // get midpoint between nodes
         this.unitVector = this.getUnitVector();
         
-        // get center of arc
-        this.centerPointVector = this.getCenterPoint();
-        console.log(this.centerPointVector);
+        // // get center of arc
+        // this.centerPointVector = this.getCenterPoint();
+        // this.geometry = new THREE.BufferGeometry().setFromPoints( this.points );
 
         // create line object
         this.points = this.getSmoothCurve();
@@ -30,7 +30,6 @@ export class NodeConnection {
             8,
             false
             );
-        //this.geometry = new THREE.BufferGeometry().setFromPoints( this.points );
         this.line = new THREE.Line( this.geometry, this.material );
     }
 

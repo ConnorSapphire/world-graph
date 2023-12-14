@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { randFloat, randInt } from 'three/src/math/MathUtils';
 import { ServerNode } from './ServerNode.js';
 import { NodeConnection } from './NodeConnection.js';
+import { ConnectionPackage } from './ConnectionPackage.js';
 
 export class AnimationManager {
     constructor(gridVisible) {
@@ -52,12 +53,14 @@ export class AnimationManager {
         this.activeNodeMaterial = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
         this.inactiveNodeMaterial = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
         this.lineMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF });
+        this.packageGeometry = new THREE.SphereGeometry(0.3);
+        this.packageMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
+        this.nodes = [];
+        this.lines = [];
+        this.packages = [];
 
         // set controls
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-
-        // node list
-        this.nodes = [];
     }
 
     // Initialise animation loop
@@ -73,6 +76,9 @@ export class AnimationManager {
             if (index < this.nodes.length) {
               this.nodes.at(index).setInactive(); 
             }
+
+            // move packages along lines
+            this.packages.forEach(this.updatePackage);
       
             // render frame
             this.renderer.render( this.scene, this.camera );
@@ -80,12 +86,23 @@ export class AnimationManager {
     }
 
     createConnection( startNode, endNode ) {
-        const line = new NodeConnection( startNode, endNode, this.worldRadius, 1.25, 30, this.lineMaterial );
+        const line = new NodeConnection( startNode, endNode, this.worldRadius, 1.25, 100, this.lineMaterial );
+        this.lines.push( line );
         this.group.add( line.line );
     }
 
+    createPackage( line, size, latency ) {
+        const connectionPackage = new ConnectionPackage( this.packageGeometry, this.packageMaterial, line.points, size, latency );
+        this.packages.push( connectionPackage );
+        this.group.add( connectionPackage.mesh );
+    }
+
+    updatePackage( value ) {
+        value.update();
+    }
+
     createRandomNode() {
-        const size = randFloat(0.1, 1);
+        const size = randFloat(0.3, 1);
         const longitude = randFloat(-3.14, 3.14);
         const latitude = randFloat(-3.14, 3.14);
         const node = new ServerNode( this.nodeGeometry, this.activeNodeMaterial, this.inactiveNodeMaterial, this.worldRadius, longitude, latitude, size );
@@ -99,6 +116,7 @@ export class AnimationManager {
             this.nodes.push( node );
             if ( i != 0 ) {
                 this.createConnection( this.nodes.at( i-1 ), node );
+                this.createPackage( this.lines.at( i-1 ), 1, randInt( 5,30 ) );
             }
         }
     }
