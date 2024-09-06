@@ -36,7 +36,7 @@ export class AnimationManager {
         this.loader = new THREE.TextureLoader();
 
         // create world
-        this.worldRadius = 10;
+        this.worldRadius = 15;
         const worldGeometry = new THREE.SphereGeometry( this.worldRadius );
         const worldTexture = this.loader.load('./world-map.jpg');
         const worldMaterial = new THREE.MeshStandardMaterial({ map: worldTexture });
@@ -85,6 +85,12 @@ export class AnimationManager {
         });
     }
 
+    createNode( size, longitude, latitude ) {
+        const node = new ServerNode( this.nodeGeometry, this.activeNodeMaterial, this.inactiveNodeMaterial, this.worldRadius, longitude, latitude, size );
+        this.nodes.push( node );
+        this.group.add( node.mesh );
+    }
+
     createConnection( startNode, endNode ) {
         const line = new NodeConnection( startNode, endNode, this.worldRadius, 1.25, 100, this.lineMaterial );
         this.lines.push( line );
@@ -99,6 +105,11 @@ export class AnimationManager {
 
     updatePackage( value ) {
         value.update();
+    }
+
+    calculateRadians( degrees ) {
+        const radians = (degrees * Math.PI) / 180;
+        return radians;
     }
 
     createRandomNode() {
@@ -116,7 +127,7 @@ export class AnimationManager {
             this.nodes.push( node );
             if ( i != 0 ) {
                 this.createConnection( this.nodes.at( i-1 ), node );
-                this.createPackage( this.lines.at( i-1 ), 1, randInt( 5,30 ) );
+                this.createPackage( this.lines.at( i-1 ), randFloat(0.5, 1), randInt( 5,30 ) );
             }
         }
     }
